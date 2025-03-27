@@ -10,6 +10,10 @@ import TextField from '../../../components/textField/TextField';
 import {FormScreenStyles as styles} from '../styles/FormScreenStyles';
 import {updateUser, userData as userDetails} from '../slice/UserSlice';
 import {formJson, userProfileUri, validateInput} from '../utility/UserUtility';
+import {
+  LoaderOnApiResponse,
+  TriggerLoader,
+} from '../../appLoader/utility/loaderHandler';
 
 type RootStackParamList = {
   FormScreen: {id: number};
@@ -65,19 +69,26 @@ function FormScreen({route}: FormScreenProps) {
   }, [userData]);
 
   const handleSubmit = useCallback(() => {
-    // Edit API and Post API gives success response but the changes not reflecting in get Api response
-    // So, we are using dispatch(updateUser(id)) here to simulate update and create operation
-    // In real-world scenario, you should use API update endpoint to update item and create Api to create operations
+    // trigger loader
+    TriggerLoader();
 
-    dispatch(
-      updateUser({
-        name: userData.name.value,
-        username: userData.username.value,
-        email: userData.email.value,
-        id,
-      }),
-    );
-    navigation.goBack();
+    //Delay update user for 2 sec, just to show loader
+    setTimeout(() => {
+      // Edit API and Post API gives success response but the changes not reflecting in get Api response
+      // So, we are using dispatch(updateUser(id)) here to simulate update and create operation
+      // In real-world scenario, you should use API update endpoint to update item and create Api to create operations
+      dispatch(
+        updateUser({
+          name: userData.name.value,
+          username: userData.username.value,
+          email: userData.email.value,
+          id,
+        }),
+      );
+      navigation.goBack();
+      //Stop loader
+      LoaderOnApiResponse();
+    }, 2000);
   }, [dispatch, navigation, userData, id]);
 
   return (
