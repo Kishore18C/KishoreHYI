@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 
 export const HomeScreenStyles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFF'},
+  safeArea: {flex: 1, backgroundColor: '#0A0A0A'},
   container: {flex: 1, marginTop: 10},
   contentContainer: {gap: 20, paddingHorizontal: 20},
 
@@ -11,10 +11,12 @@ export const HomeScreenStyles = StyleSheet.create({
     color: '#000',
   },
   button: {
-    alignSelf: 'flex-start',
     borderWidth: 1,
-    padding: 5,
+    borderColor: '#D4AF37',
     borderRadius: 5,
-    marginLeft: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
+    backgroundColor: '#D4AF37', // Gold button
   },
 });

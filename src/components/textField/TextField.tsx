@@ -12,7 +12,10 @@ const TextField: React.FC<ITextField> = props => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{props.title}</Text>
-      <TextInput style={styles.input} {...props} />
+      <TextInput
+        style={[styles.input, props.errorCondition && styles.errorInput]}
+        {...props}
+      />
       {props.errorCondition && (
         <Text style={styles.errorText}>{props?.errorMessage ?? ''}</Text>
       )}

@@ -1,18 +1,15 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Pressable, SafeAreaView, Text, View} from 'react-native';
+import React, {useEffect, useMemo, useState, useCallback} from 'react';
+import {Pressable, SafeAreaView, Text, View, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {AppDispatch} from '../../../redux/store';
 import {IFormData, IUser} from '../modal/UserModal';
 import TextField from '../../../components/textField/TextField';
 import {FormScreenStyles as styles} from '../styles/FormScreenStyles';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  createUser,
-  updateUser,
-  userData as userDetails,
-} from '../slice/UserSlice';
-import {useNavigation} from '@react-navigation/native';
-
-import {AppDispatch} from '../../../redux/store';
+import {updateUser, userData as userDetails} from '../slice/UserSlice';
+import {formJson, userProfileUri, validateInput} from '../utility/UserUtility';
 
 type RootStackParamList = {
   FormScreen: {id: number};
@@ -26,24 +23,6 @@ interface IUserData {
   email: IFormData;
 }
 
-const formJson = [
-  {
-    label: 'Username',
-    key: 'username',
-    placeholder: 'Enter your username',
-  },
-  {
-    label: 'Name',
-    key: 'name',
-    placeholder: 'Enter your name',
-  },
-  {
-    label: 'Email',
-    key: 'email',
-    placeholder: 'Enter email id',
-  },
-];
-
 function FormScreen({route}: FormScreenProps) {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
@@ -53,9 +32,9 @@ function FormScreen({route}: FormScreenProps) {
     email: {value: '', isValid: true, message: ''},
   };
   const users: IUser[] = useSelector(userDetails).users;
-
   const {id} = route.params;
   const [userData, setUserData] = useState<IUserData>(initialState);
+
   useEffect(() => {
     if (id >= 0) {
       const user = users.find(item => item.id === id);
@@ -65,43 +44,31 @@ function FormScreen({route}: FormScreenProps) {
         email: {value: user?.email ?? '', isValid: true, message: ''},
       }));
     }
-  }, []);
+  }, [id, users]);
 
-  const handleInputChange = (key: keyof IUserData, value: string) => {
-    setUserData(prevState => {
-      const updatedData = {...prevState};
+  const handleInputChange = useCallback(
+    (key: keyof IUserData, value: string) => {
+      setUserData(prevState => {
+        const updatedData = {...prevState};
+        // Basic Validations
+        updatedData[key] = validateInput(value, key);
+        return updatedData;
+      });
+    },
+    [],
+  );
 
-      // Just the basic empty field validation
-      if (value.trim() === '') {
-        updatedData[key] = {
-          value,
-          isValid: false,
-          message: 'Field is required',
-        };
-      } else if (value.length < 3) {
-        updatedData[key] = {
-          value,
-          isValid: false,
-          message: 'Field should be at least 3 characters long',
-        };
-      } else {
-        updatedData[key] = {
-          value,
-          isValid: true,
-          message: '',
-        };
-      }
-
-      return updatedData;
-    });
-  };
   const isFormValid = useMemo(() => {
     return Object.values(userData).every(
       field => field.value.trim() !== '' && field.isValid,
     );
   }, [userData]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
+    // Edit API and Post API gives success response but the changes not reflecting in get Api response
+    // So, we are using dispatch(updateUser(id)) here to simulate update and create operation
+    // In real-world scenario, you should use API update endpoint to update item and create Api to create operations
+
     dispatch(
       updateUser({
         name: userData.name.value,
@@ -110,18 +77,21 @@ function FormScreen({route}: FormScreenProps) {
         id,
       }),
     );
-
     navigation.goBack();
-  };
+  }, [dispatch, navigation, userData, id]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <Image source={{uri: userProfileUri}} style={styles.profileImage} />
+
         <View style={styles.form}>
           {formJson.map(item => (
             <View key={item.key}>
               <TextField
                 title={item.label}
                 placeholder={item.placeholder}
+                placeholderTextColor={'#B8860B'}
                 value={userData[item.key as keyof IUserData].value}
                 onChangeText={value =>
                   handleInputChange(item.key as keyof IUserData, value)
@@ -132,6 +102,7 @@ function FormScreen({route}: FormScreenProps) {
             </View>
           ))}
         </View>
+
         <Pressable
           style={[
             styles.button,

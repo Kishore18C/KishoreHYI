@@ -3,30 +3,48 @@ import {StyleSheet} from 'react-native';
 export const FormScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
+    backgroundColor: '#000000',
     alignItems: 'center',
   },
-  container: {marginTop: 30, width: '90%', alignItems: 'center'},
-  form: {width: '100%', gap: 10},
-  button: {
+  container: {
+    marginTop: 50,
+    width: '90%',
+    alignItems: 'center',
+  },
+  profileImage: {
     width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#FFD700',
+  },
+  form: {
+    width: '100%',
+    gap: 15,
+  },
+  button: {
+    width: 120,
     height: 50,
-    borderRadius: 20,
-    backgroundColor: '#4CAF50',
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 30,
+    shadowColor: '#FFD700',
+    shadowOffset: {width: 0, height: 5},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 6,
   },
   buttonText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#000000',
   },
   activeButton: {
-    backgroundColor: '#4CAF50', // Green when active
+    backgroundColor: '#FFD700',
   },
   inactiveButton: {
-    backgroundColor: '#D3D3D3', // Light gray when inactive
+    backgroundColor: '#444444',
   },
 });
